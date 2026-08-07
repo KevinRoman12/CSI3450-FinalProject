@@ -54,9 +54,11 @@ erDiagram
         date stu_dob
         date stu_join_date
     }
-Instructor {
-
-    }
+   Instructor {
+     int stu_num PK, FK
+     date instructor_start_date
+     varchar(11) instructor_status
+   }
 
 
 Instructor }o--|| Student : ""
