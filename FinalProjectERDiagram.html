@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Greetings CSI3450 Database Management and Design</title>
+  <!-- 
+      Mermaid documentation:
+     https://mermaid.js.org/syntax/entityRelationshipDiagram.html
+  -->
+
+  <!-- Load Mermaid CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.css">
+
+  <link rel="stylesheet" href="css/diag.css">
+
+</head>
+<body>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs' 
+  </script>
+
+  <!-- Initialize Mermaid -->
+  <script>
+    // Use the 'mermaid' global object to initialize the diagram
+    mermaid.initialize({
+      startOnLoad: true,
+      sequence: { showSequenceNumbers: true },
+    });
+</script>
+
+<section>
+
+<h1 style="text-align: center;">Customers - Clients and Fees</h1>
+
+
+
+<!-- 
+Sample taken from DatabaseAnswers.org 
+https://datamodels.databases.biz/
+-->
+ 
+ <div class="mermaid" style="text-align: center">
+
+---
+title: Order example
+---
+erDiagram
+
+    Student {
+        int stu_num PK
+        varchar(10) stu_lname 
+        varchar(10) stu_fname
+        date stu_dob
+        date stu_join_date
+    }
+Instructor {
+
+    }
+
+
+Instructor }o--|| Student : ""
+ 
+
+</div>
+ 
+<br>
+
+
+
+ <div class="mermaid" style="text-align: center">
+sequenceDiagram
+
+
+
+</div>
+
+
+
+</section>
+
+</body>
+</html>
