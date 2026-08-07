@@ -47,30 +47,35 @@ title: Order example
 ---
 erDiagram
 
-    Student {
-        int stu_num PK
-        varchar(10) stu_lname 
-        varchar(10) stu_fname
-        date stu_dob
-        date stu_join_date
+  Person{
+    int person_id PK
+    varchar(10) person_lname 
+    varchar(10) person_fname
+    date person_dob
+    date person_join_date
+  }
+  Student {
+    int person_id PK, FK
+    date stu_dob
+    date stu_join_date
     }
-   Instructor {
-     int stu_num PK, FK
-     date instructor_start_date
-     varchar(11) instructor_status
-   }
-   
-   Class {
+  Instructor {
+    int person_id PK, FK
+    date instructor_start_date
+    varchar(11) instructor_status
+  }
+  
+  Class {
     int class_id PK
     int instructor_id FK
     varchar(12) class_level
     time class_start_time
     varchar(8) class_day_of_week
-    
-   }
+  }
 
-
-Instructor }o--|| Student : ""
+Person ||--|| Student : "Is a"
+Person ||--|| Instructor : "Is a"
+Instructor }o--|| Student : "Is a"
  
 
 </div>
