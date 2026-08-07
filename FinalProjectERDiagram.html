@@ -52,29 +52,31 @@ erDiagram
     varchar(10) person_lname 
     varchar(10) person_fname
     date person_dob
-    date person_join_date
+    boolean person_is_instructor 
   }
+
   Student {
     int person_id PK, FK
-    date stu_dob
     date stu_join_date
-    }
+  }
+  
   Instructor {
-    int person_id PK, FK
+    int person_id PK, FK 
     date instructor_start_date
     varchar(11) instructor_status
+    boolean instructor_is_compensated 
   }
   
   Class {
     int class_id PK
-    int instructor_id FK
+    int instructor_id FK 
     varchar(12) class_level
     time class_start_time
     varchar(8) class_day_of_week
   }
 
 Person ||--|| Student : "Is a"
-Person ||--|| Instructor : "Is a"
+Person ||--o| Instructor : "Is a"
 Instructor }o--|| Student : "Is a"
  
 
