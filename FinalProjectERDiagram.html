@@ -50,8 +50,7 @@ erDiagram
   Instructor {
     int student_id PK, FK 
     date instructor_start_date
-    varchar(11) instructor_status
-    boolean instructor_is_compensated 
+    varchar(11) instructor_status "Compensated or Volunteer"
   }
 
   Student {
@@ -79,7 +78,7 @@ erDiagram
     time class_meeting_start_time
     varchar(8) class_day_of_week
     varchar(10) class_meeting_head_instructor
-    varchar(10)[] class_meeting_assistant_instructor(s)
+    varchar(10)[] student_id FK "these are the guest instructors"
   }
     Student_Rank{
     int student_id PK, FK
@@ -88,33 +87,25 @@ erDiagram
   }
 
   Rank{
-    varchar(10) rank_name PK
+    int rank_id PK
+    varchar(10) rank_name
     varchar(10) rank_belt_color
-    int rank_requirement_id
   }
 
   Rank_Requirements{
-    int rank_requirement_id PK, FK
-    varchar(50)[] rank_requirements_white_belt
-    varchar(10)[] rank_requirements_yellow_belt
-    varchar(10)[] rank_requirements_orange_belt
-    varchar(10)[] rank_requirements_purple_belt
-    varchar(10)[] rank_requirements_blue_belt
-    varchar(10)[] rank_requirements_green_belt
-    varchar(10)[] rank_requirements_brown_belt
-    varchar(10)[] rank_requirements_red_belt
-    varchar(10)[] rank_requirements_black_belt
+    int requirement_id PK
+    int rank_id FK
+    varchar(100) requirement_description
   }
   
 
-Instructor }o--|| Student : "Is a"
+Instructor }o--|| Student : "Can Become"
 Instructor ||--o{ Class : "Teaches"
 Student }|--o{ Class : "Enrolls in" 
 Student }|--o{ Class_Meeting : "Attends" 
-Student ||--|{ Student_Rank : "Has"
-Student_Rank }|--|| Rank : "Achieves"
-Rank ||--|| Rank_Requirements : "Requires"
-
+Student ||--o{ Student_Rank : "Achieves"
+Student_Rank }|--|| Rank : "Awards In"
+Rank ||--o{ Rank_Requirements : "Reqires"
 
 
 </div>
