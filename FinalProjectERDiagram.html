@@ -70,19 +70,33 @@ erDiagram
   Class {
     int class_id PK
     int instructor_id FK 
+    varchar(10) class_room
     varchar(12) class_level
     time class_start_time
     varchar(8) class_day_of_week
+  }
+
+  Class_Meeting{
+    int class_meeting_id PK
+    int class_id FK
+    varchar(10) class_meeting_room
+    time class_meeting_start_time
+    varchar(8) class_day_of_week
+
   }
 
 Person ||--|| Student : "Is a"
 Person ||--o| Instructor : "Is a"
 Instructor }o--|| Student : "Is a"
 Instructor ||--o{ Class : "Teaches"
- 
+Student }|--o{ Class : "Enrolls in" 
+Student }|--o{ Class_Meeting : "Attends" 
+
+
 
 </div>
- 
+<!-- TODO: we need to break apart the Student to Class and the Student to Class_Meeting relationships\
+ ALSO we need to add in weak and strong relationships-->
 <br>
 
 
