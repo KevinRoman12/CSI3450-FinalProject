@@ -47,26 +47,22 @@ title: “Martial Arts R Us”
 ---
 erDiagram
 
-  Person{
-    int person_id PK
-    varchar(10) person_lname 
-    varchar(10) person_fname
-    date person_dob
-    boolean person_is_instructor 
-  }
-
-  Student {
-    int person_id PK, FK
-    date student_join_date
-  }
-
   Instructor {
-    int person_id PK, FK 
+    int student_id PK, FK 
     date instructor_start_date
     varchar(11) instructor_status
     boolean instructor_is_compensated 
   }
-  
+
+  Student {
+    int student_id PK
+    varchar(10) student_lname 
+    varchar(10) student_fname
+    date student_join_date
+    date student_dob
+    boolean student_is_instructor 
+  }
+
   Class {
     int class_id PK
     int instructor_id FK 
@@ -86,7 +82,7 @@ erDiagram
     varchar(10)[] class_meeting_assistant_instructor(s)
   }
     Student_Rank{
-    int person_id PK, FK
+    int student_id PK, FK
     varchar(50)[] student_ranks_achieved
     date[] student_ranks_dates_achieved
   }
@@ -111,8 +107,6 @@ erDiagram
   }
   
 
-Person ||--|| Student : "Is a"
-Person ||--o| Instructor : "Is a"
 Instructor }o--|| Student : "Is a"
 Instructor ||--o{ Class : "Teaches"
 Student }|--o{ Class : "Enrolls in" 
