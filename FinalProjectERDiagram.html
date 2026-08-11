@@ -57,28 +57,9 @@ erDiagram
 
   Student {
     int person_id PK, FK
-    date stu_join_date
+    date student_join_date
   }
 
-  Rank{
-    varchar(10) rank_name PK
-    varchar(10) rank_belt_color
-    int rank_requirement_id
-  }
-
-  Rank_Requirements{
-    int rank_requirement_id PK, FK
-    varchar(50)[] rank_requirements_white_belt
-    varchar(10)[] rank_requirements_yellow_belt
-    varchar(10)[] rank_requirements_orange_belt
-    varchar(10)[] rank_requirements_purple_belt
-    varchar(10)[] rank_requirements_blue_belt
-    varchar(10)[] rank_requirements_green_belt
-    varchar(10)[] rank_requirements_brown_belt
-    varchar(10)[] rank_requirements_red_belt
-    varchar(10)[] rank_requirements_black_belt
-  }
-  
   Instructor {
     int person_id PK, FK 
     date instructor_start_date
@@ -104,6 +85,31 @@ erDiagram
     varchar(10) class_meeting_head_instructor
     varchar(10)[] class_meeting_assistant_instructor(s)
   }
+    Student_Rank{
+    int person_id PK, FK
+    varchar(50)[] student_ranks_achieved
+    date[] student_ranks_dates_achieved
+  }
+
+  Rank{
+    varchar(10) rank_name PK
+    varchar(10) rank_belt_color
+    int rank_requirement_id
+  }
+
+  Rank_Requirements{
+    int rank_requirement_id PK, FK
+    varchar(50)[] rank_requirements_white_belt
+    varchar(10)[] rank_requirements_yellow_belt
+    varchar(10)[] rank_requirements_orange_belt
+    varchar(10)[] rank_requirements_purple_belt
+    varchar(10)[] rank_requirements_blue_belt
+    varchar(10)[] rank_requirements_green_belt
+    varchar(10)[] rank_requirements_brown_belt
+    varchar(10)[] rank_requirements_red_belt
+    varchar(10)[] rank_requirements_black_belt
+  }
+  
 
 Person ||--|| Student : "Is a"
 Person ||--o| Instructor : "Is a"
@@ -111,7 +117,8 @@ Instructor }o--|| Student : "Is a"
 Instructor ||--o{ Class : "Teaches"
 Student }|--o{ Class : "Enrolls in" 
 Student }|--o{ Class_Meeting : "Attends" 
-Student ||--|| Rank : "Has"
+Student ||--|{ Student_Rank : "Has"
+Student_Rank }|--|| Rank : "Achieves"
 Rank ||--|| Rank_Requirements : "Requires"
 
 
