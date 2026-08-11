@@ -47,70 +47,99 @@ title: “Martial Arts R Us”
 ---
 erDiagram
 
-  Instructor {
-    int student_id PK, FK 
-    date instructor_start_date
-    varchar(11) instructor_status "Compensated or Volunteer"
+  Class_Level {
+    int level_id PK
+    varchar(20) level_name
   }
 
   Student {
     int student_id PK
-    varchar(10) student_lname 
-    varchar(10) student_fname
-    date student_join_date
+    varchar(50) student_fname
+    varchar(50) student_lname
     date student_dob
-    boolean student_is_instructor 
+    date student_join_date
+  }
+
+  Instructor {
+    int student_id PK, FK
+    date instructor_start_date
+    varchar(20) instructor_status
+  }
+
+    Student_Rank {
+    int student_rank_id PK
+    int student_id FK
+    int rank_id FK
+    date date_awarded
+  }
+
+  Rank {
+    int rank_id PK
+    int belt_color_id FK
+    varchar(50) rank_name
+  }
+
+  Rank_Requirement {
+    int requirement_id PK
+    int rank_id FK
+    varchar(255) requirement_description
+  }
+
+  Belt_Color {
+    int belt_color_id PK
+    varchar(20) color_name
   }
 
   Class {
     int class_id PK
-    int instructor_id FK 
+    int primary_instructor_student_id FK
+    int level_id FK
     varchar(10) class_room
-    varchar(12) class_level
     time class_start_time
-    varchar(8) class_day_of_week
+    varchar(10) class_day_of_week
   }
 
-  Class_Meeting{
+  Class_Meeting {
     int class_meeting_id PK
     int class_id FK
     date class_meeting_date
   }
-  Class_Instructor{
-    int class_id PK, FK
-    int student_id PK, FK
-    varchar(10) class_instructor_role "Head or Assistant"
-  }
-
-  Student_Rank{
-    int student_id PK, FK
-    varchar(50)[] student_ranks_achieved
-    date[] student_ranks_dates_achieved
-  }
-
-  Rank{
-    int rank_id PK
-    varchar(10) rank_name
-    varchar(10) rank_belt_color
-  }
-
-  Rank_Requirements{
-    int requirement_id PK
-    int rank_id FK
-    varchar(100) requirement_description
-  }
   
 
-Instructor }o--|| Student : "Can Become"
-Instructor ||--o{ Class : "Teaches"
-Student }|--o{ Class : "Enrolls in" 
-Student }|--o{ Class_Meeting : "Attends" 
-Class ||--o{ Class_Meeting : "Has Instance Of"
-Class_Meeting ||--|{ Class_Instructor : "Taught By"
-Student ||--o{ Student_Rank : "Achieves"
-Student_Rank }|--|| Rank : "Awards In"
-Rank ||--o{ Rank_Requirements : "Reqires"
+  Instructor_Role {
+    int role_id PK
+    varchar(20) role_name
+  }
 
+  Class_Meeting_Instructor {
+    int meeting_instructor_id PK
+    int class_meeting_id FK
+    int instructor_student_id FK
+    int role_id FK
+  }
+
+  Attendance {
+    int attendance_id PK
+    int student_id FK
+    int class_meeting_id FK
+  }
+    
+
+
+
+  Student ||--o| Instructor : "is a"
+  Instructor ||--o{ Class : "assigned to teach"
+  Class ||--|{ Class_Meeting : "generates"
+  Class_Meeting ||--|{ Class_Meeting_Instructor : "staffed by"
+  Instructor ||--o{ Class_Meeting_Instructor : "works meeting"
+  Instructor_Role ||--o{ Class_Meeting_Instructor : "defines role"
+  Class_Level ||--o{ Class : "categorizes"
+  Class_Meeting ||--o{ Attendance : "records"
+  Student ||--o{ Attendance : "attends"
+  Belt_Color ||--o{ Rank : "visualized by"
+  Rank ||--o{ Rank_Requirement : "requires"
+  Student ||--|{ Student_Rank : "achieves"
+  Rank ||--|{ Student_Rank : "awarded in"
 
 </div>
 <!-- TODO: we need to break apart the Student to Class and the Student to Class_Meeting relationships\
