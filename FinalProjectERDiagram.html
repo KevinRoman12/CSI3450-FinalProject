@@ -74,13 +74,15 @@ erDiagram
   Class_Meeting{
     int class_meeting_id PK
     int class_id FK
-    varchar(10) class_meeting_room
-    time class_meeting_start_time
-    varchar(8) class_day_of_week
-    varchar(10) class_meeting_head_instructor
-    varchar(10)[] student_id FK "these are the guest instructors"
+    date class_meeting_date
   }
-    Student_Rank{
+  Class_Instructor{
+    int class_id PK, FK
+    int instructor_id PK, FK
+    varchar(10) class_instructor_role "Head or Assistant"
+  }
+
+  Student_Rank{
     int student_id PK, FK
     varchar(50)[] student_ranks_achieved
     date[] student_ranks_dates_achieved
@@ -103,6 +105,8 @@ Instructor }o--|| Student : "Can Become"
 Instructor ||--o{ Class : "Teaches"
 Student }|--o{ Class : "Enrolls in" 
 Student }|--o{ Class_Meeting : "Attends" 
+Class ||--o{ Class_Meeting : "Has Instance Of"
+Class_Meeting ||--|{ Class_Instructor : "Taught By"
 Student ||--o{ Student_Rank : "Achieves"
 Student_Rank }|--|| Rank : "Awards In"
 Rank ||--o{ Rank_Requirements : "Reqires"
