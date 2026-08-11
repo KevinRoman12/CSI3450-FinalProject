@@ -59,6 +59,25 @@ erDiagram
     int person_id PK, FK
     date stu_join_date
   }
+
+  Rank{
+    varchar(10) rank_name PK
+    varchar(10) rank_belt_color
+    int rank_requirement_id
+  }
+
+  Rank_Requirements{
+    int rank_requirement_id PK, FK
+    varchar(50)[] rank_requirements_white_belt
+    varchar(10)[] rank_requirements_yellow_belt
+    varchar(10)[] rank_requirements_orange_belt
+    varchar(10)[] rank_requirements_purple_belt
+    varchar(10)[] rank_requirements_blue_belt
+    varchar(10)[] rank_requirements_green_belt
+    varchar(10)[] rank_requirements_brown_belt
+    varchar(10)[] rank_requirements_red_belt
+    varchar(10)[] rank_requirements_black_belt
+  }
   
   Instructor {
     int person_id PK, FK 
@@ -82,7 +101,8 @@ erDiagram
     varchar(10) class_meeting_room
     time class_meeting_start_time
     varchar(8) class_day_of_week
-
+    varchar(10) class_meeting_head_instructor
+    varchar(10)[] class_meeting_assistant_instructor(s)
   }
 
 Person ||--|| Student : "Is a"
@@ -91,6 +111,8 @@ Instructor }o--|| Student : "Is a"
 Instructor ||--o{ Class : "Teaches"
 Student }|--o{ Class : "Enrolls in" 
 Student }|--o{ Class_Meeting : "Attends" 
+Student ||--|| Rank : "Has"
+Rank ||--|| Rank_Requirements : "Requires"
 
 
 
