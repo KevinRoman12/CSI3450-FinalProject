@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Martial Arts R Us (MARU) - Portal</title>
+  
+  <style>
+    :root {
+      --primary: #8b0000;
+      --primary-dark: #5a0000;
+      --secondary: #1a1a1a;
+      --accent: #d4af37;
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --surface-light: #2a2a2a;
+      --text: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --border: #333333;
+      --success: #2e7d32;
+    }
+
+    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); min-height: 100vh; }
+
+    header {
+      background-color: var(--secondary);
+      border-bottom: 3px solid var(--primary);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo {
+      width: 36px; height: 36px; background: var(--primary); color: white;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 900; border: 2px solid var(--accent);
+    }
+    .brand h1 { margin: 0; font-size: 1.4rem; letter-spacing: 1px; color: #fff; }
+
+    .role-switcher {
+      display: flex; background: var(--bg); padding: 4px; border-radius: 25px; border: 1px solid var(--border);
+    }
+    .role-btn {
+      border: none; background: transparent; color: var(--text-muted);
+      padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.2s ease;
+    }
+    .role-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 6px rgba(139,0,0,0.4); }
+
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .portal-view { display: none; }
+    .portal-view.active { display: block; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; }
+    .card {
+      background: var(--surface); border-radius: 8px; padding: 1.5rem;
+      border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .card.full-width { grid-column: 1 / -1; }
+    .card h3 {
+      margin-top: 0; color: #fff; font-size: 1.1rem; border-bottom: 2px solid var(--primary);
+      padding-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;
+    }
+
+    label { display: block; margin-top: 1rem; font-weight: 600; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
+    input, select {
+      width: 100%; padding: 0.7rem; margin-top: 0.4rem; background: var(--surface-light);
+      border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 0.95rem;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); }
+
+    button.submit-btn {
+      width: 100%; padding: 0.8rem; margin-top: 1.2rem; background: var(--primary);
+      color: white; font-weight: 700; border: none; border-radius: 6px; cursor: pointer;
+      transition: background 0.2s ease; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    button.submit-btn:hover { background: var(--primary-dark); }
+    button.submit-btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+    
+    button.btn-sm {
+      padding: 6px 12px; font-size: 0.8rem; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; margin-right: 4px;
+    }
+    .btn-edit { background: var(--accent); color: #000; }
+    .btn-rank { background: #1976d2; color: #fff; }
+    .btn-promote { background: #388e3c; color: #fff; }
+    .btn-fire { background: #e65100; color: #fff; }
+    .btn-delete { background: #d32f2f; color: #fff; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-light); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
+
+    .belt-icon {
+      display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px;
+      border-radius: 4px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .belt-knot {
+      display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+      border: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .belt-white { background: #ffffff; color: #000; }
+    .belt-white .belt-knot { background: #e0e0e0; }
+    .belt-yellow { background: #ffd700; color: #000; }
+    .belt-yellow .belt-knot { background: #cca700; }
+    .belt-orange { background: #ff8c00; color: #fff; }
+    .belt-orange .belt-knot { background: #cc7000; }
+    .belt-purple { background: #800080; color: #fff; }
+    .belt-purple .belt-knot { background: #4c004c; }
+    .belt-blue { background: #1976d2; color: #fff; }
+    .belt-blue .belt-knot { background: #0d47a1; }
+    .belt-green { background: #388e3c; color: #fff; }
+    .belt-green .belt-knot { background: #1b5e20; }
+    .belt-brown { background: #795548; color: #fff; }
+    .belt-brown .belt-knot { background: #4e342e; }
+    .belt-red { background: #d32f2f; color: #fff; }
+    .belt-red .belt-knot { background: #b71c1c; }
+    .belt-black { background: #212121; color: #fff; border: 1px solid var(--accent); }
+    .belt-black .belt-knot { background: var(--accent); }
+
+    .instructor-badge {
+      background: var(--accent); color: #000; font-weight: 700; padding: 2px 8px;
+      border-radius: 4px; font-size: 0.75rem; margin-left: 8px; text-transform: uppercase;
+    }
+
+    .toast {
+      padding: 1rem; border-radius: 6px; margin-bottom: 1rem; display: none;
+      font-weight: 600; font-size: 0.9rem;
+    }
+    .toast.success { background: var(--success); color: white; display: block; }
+    .toast.error { background: var(--primary); color: white; display: block; }
+
+    .scroll-table-container {
+      max-height: 380px; overflow-y: auto; border: 1px solid var(--border);
+      border-radius: 6px; margin-top: 1rem;
+    }
+
+    .modal {
+      display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center;
+    }
+    .modal-content {
+      background: var(--surface); padding: 1.5rem; border-radius: 8px; max-width: 550px; width: 90%;
+      border: 1px solid var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto;
+    }
+    .head-instructor-info {
+      background: var(--surface-light); padding: 0.8rem; border-radius: 6px;
+      margin-top: 0.8rem; border-left: 3px solid var(--accent); font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">武</div>
+      <h1>Martial Arts R Us</h1>
+    </div>
+    <div class="role-switcher">
+      <button id="tab-student" class="role-btn active">Student Portal</button>
+      <button id="tab-instructor" class="role-btn">Instructor / Admin Portal</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div id="toast-msg" class="toast"></div>
+
+    <!-- STUDENT PORTAL -->
+    <div id="student-portal" class="portal-view active">
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3>
+          <span>Select Active Profile</span>
+          <span id="instructor-indicator" style="display: none;" class="instructor-badge">Certified Instructor</span>
+        </h3>
+        <select id="student-select" onchange="loadStudentData()"></select>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Rank Progression History</h3>
+          <p style="margin: 0.5rem 0;">Current Rank: <span id="current-rank">Loading...</span></p>
+          <table>
+            <thead>
+              <tr><th>Rank</th><th>Belt</th><th>Awarded</th></tr>
+            </thead>
+            <tbody id="student-rank-history"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Class Check-In (Student)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Check in as a regular student for training sessions.</p>
+          <table>
+            <thead>
+              <tr><th>Class & Date</th><th>Time & Room</th><th>Action</th></tr>
+            </thead>
+            <tbody id="student-meetings-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- INSTRUCTOR SIGN-UP CARD -->
+        <div id="instructor-signup-card" class="card" style="display: none; border-color: var(--accent);">
+          <h3 style="border-bottom-color: var(--accent);">
+            <span>Assistant Instructor Sign-Up</span>
+            <span class="instructor-badge">Privileged</span>
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Sign up as an Assistant Instructor for upcoming class sessions.</p>
+
+          <form id="assistant-signup-form">
+            <input type="hidden" name="instructor_student_id" id="hidden_inst_student_id">
+            
+            <label>Select Scheduled Meeting</label>
+            <select name="class_meeting_id" id="instructor-meeting-select" onchange="updateMeetingDetails()"></select>
+
+            <div id="head-instructor-box" class="head-instructor-info">
+              <div>Assigned Head Instructor: <strong id="head-instructor-name">Loading...</strong></div>
+              <div style="margin-top: 0.4rem;">Current Assistant(s): <strong id="assistant-instructors-list" style="color: var(--accent);">None</strong></div>
+            </div>
+
+            <button type="submit" id="asst-submit-btn" class="submit-btn" style="background: var(--accent); color: #000;">Register as Assistant Instructor</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- INSTRUCTOR / ADMIN PORTAL -->
+    <div id="instructor-portal" class="portal-view">
+      <div class="grid">
+
+        <!-- STUDENT ROSTER & SEARCH HUB -->
+        <div class="card full-width">
+          <h3>Student Roster & Management Hub</h3>
+          <div style="display: flex; gap: 1rem; margin-top: 0.8rem; align-items: center;">
+            <input type="text" id="search-student" placeholder="Search students by name..." style="margin-top: 0;" onkeyup="renderRosterTable()">
+            <button class="btn-sm btn-promote" onclick="openAddModal()" style="height: 42px; white-space: nowrap;">+ Add New Student</button>
+          </div>
+          
+          <div class="scroll-table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Current Rank</th>
+                  <th>Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="roster-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CREATE CLASS -->
+        <div class="card">
+          <h3>Create Base Class</h3>
+          <form id="create-class-form">
+            <label>Skill Level</label>
+            <select name="skill_level" required>
+              <option value="Beginner Martial Arts">Beginner Martial Arts</option>
+              <option value="Intermediate Martial Arts">Intermediate Martial Arts</option>
+              <option value="Advanced Black Belt">Advanced Black Belt</option>
+            </select>
+
+            <label>Day of Week</label>
+            <select name="day_of_week" required>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+              <option value="Sunday">Sunday</option>
+            </select>
+
+            <label>Start Time</label>
+            <input type="time" name="start_time" value="17:00" required>
+
+            <label>Room Number / Name</label>
+            <input type="text" name="room" placeholder="e.g. Room #1" required>
+
+            <label>Default Head Instructor</label>
+            <select name="instructor_student_id" class="instructor-dropdown" required></select>
+
+            <button type="submit" class="submit-btn">Create Base Class</button>
+          </form>
+        </div>
+
+        <!-- SCHEDULE MEETING -->
+        <div class="card">
+          <h3>Schedule Class Meeting</h3>
+          <form id="create-meeting-form">
+            <label>Select Base Class</label>
+            <select name="class_id" id="meeting-class-select" required></select>
+
+            <label>Meeting Date</label>
+            <input type="date" name="meeting_date" id="meeting_date_input" required>
+
+            <label>Assigned Head Instructor</label>
+            <select name="head_instructor_id" id="meeting-head-instructor-select" class="instructor-dropdown" required></select>
+
+            <button type="submit" class="submit-btn">Schedule Class Meeting</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div id="modal-container" class="modal">
+    <div class="modal-content" id="modal-body"></div>
+  </div>
+
+  <script>
+    let studentRoster = [];
+    let instructorList = [];
+    let classList = [];
+    let meetingList = [];
+    let rankList = [];
+    let rosterRanks = {};
+
+    function renderBeltBadge(rankName, beltColor) {
+      if (!rankName || !beltColor) return '<span class="belt-icon belt-white"><span class="belt-knot"></span>Unranked</span>';
+      const cleanColor = beltColor.toLowerCase().replace(/\s+/g, '');
+      return `<span class="belt-icon belt-${cleanColor}"><span class="belt-knot"></span>${rankName} (${beltColor})</span>`;
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast-msg');
+      toast.innerText = msg;
+      toast.className = `toast ${type}`;
+      setTimeout(() => { toast.className = 'toast'; }, 4000);
+    }
+
+    function setTodayDates() {
+      const today = new Date().toISOString().split('T')[0];
+      const el = document.getElementById('meeting_date_input');
+      if (el) el.value = today;
+    }
+
+    function closeModal() {
+      document.getElementById('modal-container').style.display = 'none';
+    }
+
+    // Role Switching
+    document.getElementById('tab-student').addEventListener('click', () => {
+      document.getElementById('tab-student').classList.add('active');
+      document.getElementById('tab-instructor').classList.remove('active');
+      document.getElementById('student-portal').classList.add('active');
+      document.getElementById('instructor-portal').classList.remove('active');
+    });
+
+    document.getElementById('tab-instructor').addEventListener('click', () => {
+      document.getElementById('tab-instructor').classList.add('active');
+      document.getElementById('tab-student').classList.remove('active');
+      document.getElementById('instructor-portal').classList.add('active');
+      document.getElementById('student-portal').classList.remove('active');
+    });
+
+    // API Handlers
+    async function loadStudents() {
+      try {
+        const res = await fetch('api.php?action=get_students');
+        studentRoster = await res.json();
+
+        const select = document.getElementById('student-select');
+        select.innerHTML = '';
+        studentRoster.forEach(s => {
+          select.innerHTML += `<option value="${s.student_id}">${s.first_name} ${s.last_name} (ID: ${s.student_id})</option>`;
+        });
+
+        await loadRosterRanks();
+        renderRosterTable();
+        if (studentRoster.length > 0) loadStudentData();
+      } catch (err) {
+        showToast('Error loading student roster.', 'error');
+      }
+    }
+
+    async function loadRosterRanks() {
+      try {
+        const res = await fetch('api.php?action=get_roster_ranks');
+        const data = await res.json();
+        rosterRanks = {};
+        data.forEach(r => { rosterRanks[r.student_id] = r; });
+      } catch (err) {
+        console.error("Failed to fetch roster ranks.");
+      }
+    }
+
+    async function loadRanks() {
+      try {
+        const res = await fetch('api.php?action=get_ranks');
+        rankList = await res.json();
+      } catch (err) {
+        showToast('Error loading ranks.', 'error');
+      }
+    }
+
+    async function loadInstructors() {
+      try {
+        const res = await fetch('api.php?action=get_instructors');
+        instructorList = await res.json();
+
+        const dropdowns = document.querySelectorAll('.instructor-dropdown');
+        dropdowns.forEach(select => {
+          select.innerHTML = '';
+          instructorList.forEach(i => {
+            select.innerHTML += `<option value="${i.instructor_student_id}">${i.first_name} ${i.last_name} (${i.instructor_status})</option>`;
+          });
+        });
+      } catch (err) {
+        showToast('Error loading instructors.', 'error');
+      }
+    }
+
+    async function loadClasses() {
+      try {
+        const res = await fetch('api.php?action=get_classes');
+        classList = await res.json();
+
+        const classSelect = document.getElementById('meeting-class-select');
+        classSelect.innerHTML = '';
+        classList.forEach(c => {
+          classSelect.innerHTML += `<option value="${c.class_id}">${c.skill_level} - ${c.day_of_week} ${c.start_time} (${c.room})</option>`;
+        });
+
+        classSelect.onchange = () => {
+          const selected = classList.find(c => c.class_id == classSelect.value);
+          if (selected) {
+            document.getElementById('meeting-head-instructor-select').value = selected.instructor_student_id;
+          }
+        };
+
+        if (classList.length > 0) classSelect.onchange();
+      } catch (err) {
+        showToast('Error loading base classes.', 'error');
+      }
+    }
+
+    async function loadMeetings() {
+      try {
+        const res = await fetch('api.php?action=get_meetings');
+        meetingList = await res.json();
+
+        const instMeetingSelect = document.getElementById('instructor-meeting-select');
+        instMeetingSelect.innerHTML = '';
+        const studentMeetingsTbody = document.getElementById('student-meetings-tbody');
+        studentMeetingsTbody.innerHTML = '';
+
+        meetingList.forEach(m => {
+          instMeetingSelect.innerHTML += `<option value="${m.class_meeting_id}">${m.skill_level} (${m.meeting_date})</option>`;
+          studentMeetingsTbody.innerHTML += `
+            <tr>
+              <td>${m.skill_level}<br><small>${m.meeting_date}</small></td>
+              <td>${m.start_time}<br><small>${m.room}</small></td>
+              <td><button class="btn-sm btn-promote" onclick="checkInStudent(${m.class_meeting_id})">Check In</button></td>
+            </tr>
+          `;
+        });
+
+        updateMeetingDetails();
+      } catch (err) {
+        showToast('Error loading class meetings.', 'error');
+      }
+    }
+
+    async function checkForNotices(studentId) {
+      try {
+        const res = await fetch(`api.php?action=get_notices&student_id=${studentId}`);
+        const notices = await res.json();
+        if (notices && notices.length > 0) {
+          let noticeMessages = notices.map(n => `<p>• ${n.message}</p>`).join('');
+          const html = `
+            <h3 style="color: var(--accent);">Class Cancellation Alert</h3>
+            <p>The following schedule changes affect your enrolled classes:</p>
+            <div style="background: var(--surface-light); padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+              ${noticeMessages}
+            </div>
+            <button class="submit-btn" onclick="closeModal()">Acknowledge</button>
+          `;
+          document.getElementById('modal-body').innerHTML = html;
+          document.getElementById('modal-container').style.display = 'flex';
+        }
+      } catch (err) {
+        console.error("Notice check error:", err);
+      }
+    }
+
+    async function loadStudentData() {
+      const studentId = document.getElementById('student-select').value;
+      if (!studentId) return;
+
+      checkForNotices(studentId);
+
+      const currentStudent = studentRoster.find(s => s.student_id == studentId);
+      const isInstructor = currentStudent && currentStudent.is_instructor == 1;
+
+      document.getElementById('instructor-indicator').style.display = isInstructor ? 'inline-block' : 'none';
+      document.getElementById('instructor-signup-card').style.display = isInstructor ? 'block' : 'none';
+      if (isInstructor) {
+        document.getElementById('hidden_inst_student_id').value = studentId;
+        updateMeetingDetails();
+      }
+
+      try {
+        const res = await fetch(`api.php?action=get_student_ranks&student_id=${studentId}`);
+        const ranks = await res.json();
+
+        const tbody = document.getElementById('student-rank-history');
+        tbody.innerHTML = '';
+
+        if (ranks.length > 0) {
+          document.getElementById('current-rank').innerHTML = renderBeltBadge(ranks[0].rank_name, ranks[0].belt_color);
+          ranks.forEach(r => {
+            tbody.innerHTML += `<tr><td>${r.rank_name}</td><td>${renderBeltBadge(r.rank_name, r.belt_color)}</td><td>${r.date_awarded}</td></tr>`;
+          });
+        } else {
+          document.getElementById('current-rank').innerText = 'Unranked';
+          tbody.innerHTML = '<tr><td colspan="3">No ranks awarded yet.</td></tr>';
+        }
+      } catch (err) {
+        showToast('Error loading student rank details.', 'error');
+      }
+    }
+
+    function updateMeetingDetails() {
+      const meetingId = document.getElementById('instructor-meeting-select').value;
+      const studentId = document.getElementById('student-select').value;
+      const submitBtn = document.getElementById('asst-submit-btn');
+
+      if (!meetingId || !meetingList.length) return;
+
+      const meeting = meetingList.find(m => m.class_meeting_id == meetingId);
+      if (!meeting) return;
+
+      document.getElementById('head-instructor-name').innerText = meeting.head_name || 'None Assigned';
+      document.getElementById('assistant-instructors-list').innerText = meeting.assistant_names || 'None';
+
+      const isHead = meeting.head_id == studentId;
+      const assistantIds = meeting.assistant_ids ? meeting.assistant_ids.split(',') : [];
+      const isAssistant = assistantIds.includes(String(studentId));
+
+      if (isHead) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Assigned as Head Instructor';
+      } else if (isAssistant) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Already Registered as Assistant';
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Register as Assistant Instructor';
+      }
+    }
+
+    function renderRosterTable() {
+      const searchTerm = document.getElementById('search-student').value.toLowerCase();
+      const tbody = document.getElementById('roster-tbody');
+      tbody.innerHTML = '';
+
+      const filtered = studentRoster.filter(s => 
+        `${s.first_name} ${s.last_name}`.toLowerCase().includes(searchTerm)
+      );
+
+      filtered.forEach(s => {
+        const rankInfo = rosterRanks[s.student_id];
+        const badge = rankInfo ? renderBeltBadge(rankInfo.rank_name, rankInfo.belt_color) : renderBeltBadge('White Belt', 'White');
+        const role = s.is_instructor == 1 ? '<span class="instructor-badge">Instructor</span>' : 'Student';
+
+        let actionButtons = `
+          <button class="btn-sm btn-rank" onclick="openAwardRankModal(${s.student_id})">Award Rank</button>
+        `;
+
+        if (s.is_instructor == 0) {
+          actionButtons += `
+            <button class="btn-sm btn-promote" onclick="openPromoteModal(${s.student_id})">Promote</button>
+            <button class="btn-sm btn-delete" onclick="deleteStandardStudent(${s.student_id})">Delete</button>
+          `;
+        } else {
+          actionButtons += `
+            <button class="btn-sm btn-fire" onclick="openInstructorActionModal(${s.student_id}, 'fire')">Fire</button>
+            <button class="btn-sm btn-delete" onclick="openInstructorActionModal(${s.student_id}, 'delete')">Delete</button>
+          `;
+        }
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${s.student_id}</td>
+            <td><strong>${s.first_name} ${s.last_name}</strong></td>
+            <td>${badge}</td>
+            <td>${role}</td>
+            <td>${actionButtons}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // Action Handlers
+    async function checkInStudent(meetingId) {
+      const studentId = document.getElementById('student-select').value;
+      const formData = new FormData();
+      formData.append('student_id', studentId);
+      formData.append('class_meeting_id', meetingId);
+
+      const res = await fetch('api.php?action=checkin_student', { method: 'POST', body: formData });
+      const data = await res.json();
+      showToast(data.message, data.status);
+    }
+
+    async function deleteStandardStudent(studentId) {
+      if (!confirm("Are you sure you want to delete this student? All history will be removed.")) return;
+
+      const formData = new FormData();
+      formData.append('student_id', studentId);
+
+      const res = await fetch('api.php?action=delete_student', { method: 'POST', body: formData });
+      const data = await res.json();
+      showToast(data.message, data.status);
+      if (data.status === 'success') {
+        await loadStudents();
+        await loadInstructors();
+      }
+    }
+
+    async function openInstructorActionModal(instructorId, actionType) {
+      const res = await fetch(`api.php?action=inspect_instructor_impact&instructor_student_id=${instructorId}`);
+      const impact = await res.json();
+
+      const instStudent = studentRoster.find(s => s.student_id == instructorId);
+      const instName = instStudent ? `${instStudent.first_name} ${instStudent.last_name}` : 'Instructor';
+
+      let asstListHtml = impact.assistant_meetings.length > 0 
+        ? impact.assistant_meetings.map(m => `<li>${m.skill_level} (${m.meeting_date})</li>`).join('')
+        : '<li>No upcoming assistant meeting assignments.</li>';
+
+      let headClassesHtml = '';
+      if (impact.head_classes.length > 0) {
+        headClassesHtml = `
+          <h4 style="margin-top: 1rem; color: var(--accent);">Head Instructor Reassignments Required:</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">This instructor heads the following classes. Select a replacement or cancel the class:</p>
+        `;
+
+        impact.head_classes.forEach(c => {
+          let optionsHtml = `<option value="cancel">-- CANCEL CLASS & NOTIFY STUDENTS --</option>`;
+          instructorList.forEach(other => {
+            if (other.instructor_student_id != instructorId) {
+              optionsHtml += `<option value="${other.instructor_student_id}">${other.first_name} ${other.last_name}</option>`;
+            }
+          });
+
+          headClassesHtml += `
+            <div style="margin-top: 0.8rem; background: var(--surface-light); padding: 0.8rem; border-radius: 6px;">
+              <strong>${c.skill_level} (${c.day_of_week} ${c.start_time})</strong>
+              <select class="head-reassign-select" data-class-id="${c.class_id}">
+                ${optionsHtml}
+              </select>
+            </div>
+          `;
+        });
+      }
+
+      const modalTitle = actionType === 'fire' ? `Fire / Un-promote ${instName}` : `Delete Instructor & Student ${instName}`;
+      const modalDesc = actionType === 'fire' 
+        ? `This will remove instructor privileges and un-assign them from meetings. They will remain an active student.`
+        : `This will PERMANENTLY purge this user account and drop them from all active rosters.`;
+
+      const html = `
+        <h3>${modalTitle}</h3>
+        <p style="font-size:0.9rem; color: var(--text-muted);">${modalDesc}</p>
+        
+        <h4 style="margin-top: 1rem; color: var(--text);">Impacted Assistant Meetings:</h4>
+        <ul style="font-size: 0.85rem; padding-left: 1.2rem; color: var(--text-muted);">
+          ${asstListHtml}
+        </ul>
+
+        ${headClassesHtml}
+
+        <button type="button" class="submit-btn" style="background: var(--primary); margin-top: 1.5rem;" onclick="submitInstructorAction(${instructorId}, '${actionType}')">Confirm & Process</button>
+        <button type="button" class="submit-btn" style="background: var(--surface-light); margin-top: 0.5rem;" onclick="closeModal()">Cancel</button>
+      `;
+
+      document.getElementById('modal-body').innerHTML = html;
+      document.getElementById('modal-container').style.display = 'flex';
+    }
+
+    async function submitInstructorAction(instructorId, actionType) {
+      const reassignments = {};
+      const selects = document.querySelectorAll('.head-reassign-select');
+      selects.forEach(s => {
+        reassignments[s.getAttribute('data-class-id')] = s.value;
+      });
+
+      const formData = new FormData();
+      formData.append('instructor_student_id', instructorId);
+      formData.append('action_type', actionType);
+      formData.append('reassignments', JSON.stringify(reassignments));
+
+      const res = await fetch('api.php?action=execute_instructor_action', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      showToast(data.message, data.status);
+      if (data.status === 'success') {
+        closeModal();
+        await loadInstructors();
+        await loadStudents();
+        await loadClasses();
+        await loadMeetings();
+      }
+    }
+
+    // Modal UI Functions
+    function openAddModal() {
+      const today = new Date().toISOString().split('T')[0];
+      const html = `
+        <h3>Add New Student</h3>
+        <form id="add-student-form">
+          <label>First Name</label>
+          <input type="text" name="first_name" required>
+          <label>Last Name</label>
+          <input type="text" name="last_name" required>
+          <label>Date of Birth</label>
+          <input type="date" name="date_of_birth" required>
+          <label>Join Date</label>
+          <input type="date" name="join_date" value="${today}" required>
+          <button type="submit" class="submit-btn">Register Student</button>
+          <button type="button" class="submit-btn" style="background: var(--surface-light); margin-top: 0.5rem;" onclick="closeModal()">Cancel</button>
+        </form>
+      `;
+      document.getElementById('modal-body').innerHTML = html;
+      document.getElementById('modal-container').style.display = 'flex';
+
+      document.getElementById('add-student-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const res = await fetch('api.php?action=add_student', { method: 'POST', body: formData });
+        const data = await res.json();
+        showToast(data.message, data.status);
+        if (data.status === 'success') {
+          closeModal();
+          loadStudents();
+        }
+      };
+    }
+
+    function openAwardRankModal(studentId) {
+      const today = new Date().toISOString().split('T')[0];
+      let options = '';
+      rankList.forEach(r => { options += `<option value="${r.rank_id}">${r.rank_name} (${r.belt_color})</option>`; });
+
+      const html = `
+        <h3>Award Belt Rank</h3>
+        <form id="award-rank-form">
+          <input type="hidden" name="student_id" value="${studentId}">
+          <label>Select Rank</label>
+          <select name="rank_id">${options}</select>
+          <label>Date Awarded</label>
+          <input type="date" name="date_awarded" value="${today}" required>
+          <button type="submit" class="submit-btn">Promote Rank</button>
+          <button type="button" class="submit-btn" style="background: var(--surface-light); margin-top: 0.5rem;" onclick="closeModal()">Cancel</button>
+        </form>
+      `;
+      document.getElementById('modal-body').innerHTML = html;
+      document.getElementById('modal-container').style.display = 'flex';
+
+      document.getElementById('award-rank-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const res = await fetch('api.php?action=award_rank', { method: 'POST', body: formData });
+        const data = await res.json();
+        showToast(data.message, data.status);
+        if (data.status === 'success') {
+          closeModal();
+          loadStudents();
+        }
+      };
+    }
+
+    function openPromoteModal(studentId) {
+      const today = new Date().toISOString().split('T')[0];
+      const html = `
+        <h3>Promote to Certified Instructor</h3>
+        <form id="promote-inst-form">
+          <input type="hidden" name="student_id" value="${studentId}">
+          <label>Start Date</label>
+          <input type="date" name="instructor_start_date" value="${today}" required>
+          <label>Status</label>
+          <select name="instructor_status">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <button type="submit" class="submit-btn" style="background: var(--accent); color:#000;">Grant Instructor Rights</button>
+          <button type="button" class="submit-btn" style="background: var(--surface-light); margin-top: 0.5rem;" onclick="closeModal()">Cancel</button>
+        </form>
+      `;
+      document.getElementById('modal-body').innerHTML = html;
+      document.getElementById('modal-container').style.display = 'flex';
+
+      document.getElementById('promote-inst-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const res = await fetch('api.php?action=promote_instructor', { method: 'POST', body: formData });
+        const data = await res.json();
+        showToast(data.message, data.status);
+        if (data.status === 'success') {
+          closeModal();
+          await loadStudents();
+          await loadInstructors();
+        }
+      };
+    }
+
+    // Form Submissions
+    document.getElementById('create-class-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const res = await fetch('api.php?action=create_class', { method: 'POST', body: formData });
+      const data = await res.json();
+      showToast(data.message, data.status);
+      if (data.status === 'success') loadClasses();
+    };
+
+    document.getElementById('create-meeting-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const res = await fetch('api.php?action=create_meeting', { method: 'POST', body: formData });
+      const data = await res.json();
+      showToast(data.message, data.status);
+      if (data.status === 'success') loadMeetings();
+    };
+
+    document.getElementById('assistant-signup-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const res = await fetch('api.php?action=assign_assistant', { method: 'POST', body: formData });
+      const data = await res.json();
+      showToast(data.message, data.status);
+      if (data.status === 'success') loadMeetings();
+    };
+
+    // Initial Loading Sequence
+    window.onload = async () => {
+      setTodayDates();
+      await loadRanks();
+      await loadInstructors();
+      await loadStudents();
+      await loadClasses();
+      await loadMeetings();
+    };
+  </script>
+</body>
+</html>
