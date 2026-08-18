@@ -118,24 +118,6 @@ CREATE TABLE `Student_Rank` (
   CONSTRAINT `fk_studentrank_student` FOREIGN KEY (`student_id`) REFERENCES `Student` (`student_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Track canceled classes and reasons
-CREATE TABLE IF NOT EXISTS canceled_classes (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  class_id UUID NOT NULL,
-  class_name TEXT NOT NULL,
-  canceled_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  reason TEXT
-);
-
--- Student notification queue for popups upon login
-CREATE TABLE IF NOT EXISTS student_cancellation_alerts (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  student_id UUID NOT NULL,
-  class_name TEXT NOT NULL,
-  reason TEXT NOT NULL,
-  is_read BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
 
 -- Seed Initial Data
 
